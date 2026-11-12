@@ -15,7 +15,7 @@
   --ink-3: #5E5E5E;
   --on-night: #F2F2F1;
   --on-night-2: #C9C9C7;
-  --orange: #E35A33;
+  --orange: #FF4E00; /* brand orange, from the Dawnage logo files */
   --on-orange: #151515;
   --error: #A3261B;
   --f-display: "Familjen Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -85,7 +85,8 @@ p, ul, ol, figure, blockquote { margin: 0; }
 /* ---------- header ---------- */
 .site-header { position: relative; z-index: 50; padding-top: 24px; }
 .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--raised); border-radius: 36px; padding: 10px 10px 10px 20px; box-shadow: var(--lift), 0 12px 32px rgba(0, 0, 0, .06); }
-.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-family: var(--f-display); font-weight: 700; font-size: 22px; letter-spacing: -.02em; min-height: 44px; }
+.brand { display: inline-flex; align-items: center; flex: 0 0 auto; text-decoration: none; min-height: 44px; }
+.brand img { display: block; }
 .nav-links { display: flex; gap: 2px; background: #E6E6E5; border-radius: 999px; padding: 4px; }
 .nav-links a { padding: 12px 18px; border-radius: 999px; text-decoration: none; font-weight: 500; font-size: 15px; color: var(--ink-2); transition: color .2s, background .2s; }
 .nav-links a:hover { color: var(--ink); }
@@ -116,13 +117,12 @@ p, ul, ol, figure, blockquote { margin: 0; }
 .hero-side { flex: 1 1 520px; min-width: 0; }
 .page-hero { padding-block: 64px 88px; }
 .page-hero .hero-copy { gap: 24px; }
+/* Apply page: intro stays beside the form only when they sit side by side (on phones it would slide over the form) */
+@media (min-width: 1140px) { .apply-intro { position: sticky; top: 24px; } }
 .chip { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; background: var(--raised); border-radius: 999px; padding: 6px 16px 6px 6px; font-size: 14px; font-weight: 500; color: #3D3D3D; box-shadow: 0 4px 14px rgba(0, 0, 0, .05); }
 .chip .dot-ico { width: 28px; height: 28px; border-radius: 999px; background: var(--orange); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
 .founder-line { display: flex; align-items: center; gap: 14px; padding-top: 4px; }
-.avatars { display: flex; }
-.avatars span { width: 40px; height: 40px; border-radius: 999px; border: 3px solid var(--canvas); background: #CFCFCD; }
-.avatars span + span { margin-left: -12px; background: #BDBDBB; }
-.avatars span + span + span { background: #A9A9A7; }
+.founder-av { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 999px; border: 3px solid var(--raised); box-shadow: var(--soft); }
 .crumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; color: var(--ink-2); }
 .crumbs a { text-decoration: none; font-weight: 500; color: var(--ink-2); }
 .crumbs a:hover { color: var(--ink); text-decoration: underline; }
@@ -132,7 +132,7 @@ p, ul, ol, figure, blockquote { margin: 0; }
 .app-card { background: var(--panel-in); border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8); }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .goal-title { font-family: var(--f-display); font-size: 20px; font-weight: 500; line-height: 1.25; max-width: 230px; }
-.bolt { width: 48px; height: 48px; border-radius: 999px; background: var(--orange); color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(227, 90, 51, .35); flex: 0 0 auto; }
+.bolt { width: 48px; height: 48px; border-radius: 999px; background: var(--orange); color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(255, 78, 0, .35); flex: 0 0 auto; }
 .progress { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--panel); border-radius: 999px; padding: 6px 16px 6px 6px; }
 .progress .fill { width: 45%; height: 28px; border-radius: 999px; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .06); animation: grow 1.2s .3s cubic-bezier(.2, .7, .2, 1) both; }
 .progress b { font-size: 14px; font-weight: 600; white-space: nowrap; }
@@ -217,6 +217,11 @@ a.tile:hover { transform: translateY(-3px); box-shadow: var(--lift), 0 16px 32px
 .photo-ph.dark { background: #3A3A39; }
 .photo-ph .ph-label { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, .88); border-radius: 999px; padding: 6px 12px; font-size: 12px; color: #3D3D3D; }
 .photo-ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Cut-out portrait (founder): soft grey backdrop; on the big founder cards a faint falcon mark sits behind */
+.photo-ph.portrait { background: linear-gradient(180deg, #E9E9E8, #CDCDCB); }
+.founder > .photo-ph.portrait { background: url("img/mark-white.svg") no-repeat 50% 18% / 80% auto, linear-gradient(180deg, #E9E9E8, #CDCDCB); }
+.photo-ph.portrait img { object-fit: contain; object-position: 50% 100%; }
+.team-photo { width: min(100%, 520px); aspect-ratio: 580 / 346; padding: 0; background: #0A0A0B; }
 
 .band { margin-top: 16px; background: var(--panel); border-radius: 32px; padding: 32px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; box-shadow: inset 0 2px 0 rgba(255, 255, 255, .7); }
 .band .feature { display: flex; flex-direction: column; gap: 12px; }

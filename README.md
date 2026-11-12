@@ -46,7 +46,7 @@ To check a change, refresh `index.html` in your browser.
 
 ## 4. What's still placeholder
 
-Anything the client still needs to supply is shown with a **dashed underline and [BRACKETS]**, and photos are grey boxes labelled "Photo · …". Collect these from the client:
+Anything the client still needs to supply is shown with a **dashed underline and [BRACKETS]**, and missing photos are grey boxes labelled "Photo · …". Collect these from the client:
 
 | What | Where it appears |
 |---|---|
@@ -62,8 +62,12 @@ Anything the client still needs to supply is shown with a **dashed underline and
 | Proof for the 85 / 93 / 72 / 89% stats | Home |
 | A note on how WhatsApp data is stored | Dawnage AI |
 | Real guides (the current one is a sample) | Resources, Guides |
+| Coach portraits (3) | About |
+| Run Club, Community and Census event photos | Community, Run Club, The Census |
 
-Photo names to ask for are listed in `site/photos/README.txt`.
+Photo names to ask for, and which photos are already in place, are listed in `site/photos/README.txt`.
+
+**Logo and photos already in place:** the real Dawnage logo (header, footer, browser icon, share image), the founder portrait (Home, About), the team photo (About), and black-and-white mood photos for the four goals, the sample guide and the two ebook covers. The mood photos came from the THEBETTERSELF and Northform project folders: **confirm they're licensed for commercial use (e.g. Unsplash) before launch**, or swap them for Dawnage's own shoots.
 
 ## 5. How the Apply form works
 
