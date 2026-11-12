@@ -1,0 +1,15 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/membership",
+      "destination": "/coaching#plans",
+      "permanent": true
+    },
+    {
+      "source": "/store",
+      "destination": "/ebooks",
+      "permanent": true
+    }
+  ]
+}
