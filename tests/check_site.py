@@ -144,5 +144,37 @@ class Structure(unittest.TestCase):
         self.assertEqual(hits, [])
 
 
+class Home(unittest.TestCase):
+    def test_home_hero_video(self):
+        html = read("index.html")
+        m = re.search(r"<video\b[^>]*>", html)
+        self.assertTrue(m, "no <video>")
+        tag = m.group(0)
+        self.assertIn('class="hero-loop"', tag)
+        for attr in (" muted", " loop", " playsinline", 'poster="photos/team.webp"',
+                     'data-src-wide="media/hero-loop.mp4"', 'data-src-tall="media/hero-loop-vertical.mp4"'):
+            self.assertIn(attr, tag)
+        self.assertNotIn(" src=", tag)
+        self.assertNotIn("<source", html)
+        self.assertRegex(html, r'<button[^>]*class="loop-toggle"')
+        self.assertRegex(html, r"<h1[^>]*>\s*Do it anyway\.\s*</h1>")
+
+    def test_home_film(self):
+        html = read("index.html")
+        self.assertRegex(html, r'<button[^>]*data-film="[^"]*"[^>]*data-film-mode="dialog"')
+        self.assertRegex(html, r'<dialog[^>]*id="film-dialog"')
+
+    def test_home_screens(self):
+        main = main_html("index.html")
+        self.assertEqual(len(re.findall(r"<section\b", main)), 5)
+        t = text("index.html")
+        self.assertIn("The Dawnage app.", t)
+        self.assertIn("clients coached", t)
+        for href in ("coaching.html", "community.html", "hq.html", "resources.html", "coaching.html#results", "about.html"):
+            self.assertIn(f'href="{href}"', main, href)
+        self.assertNotRegex(re.sub(r"<[^>]+>", " ", main), r"\d+\s*%")
+        self.assertNotIn("<details", main)
+
+
 if __name__ == "__main__":
     unittest.main()

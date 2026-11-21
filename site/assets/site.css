@@ -111,6 +111,38 @@ p, ul, ol, figure, blockquote { margin: 0; }
   .nav { padding-left: 16px; }
 }
 
+/* ---------- home ---------- */
+body.home .site-header { position: absolute; top: 0; left: 0; right: 0; }
+.hero-video { position: relative; height: 100svh; min-height: 560px; overflow: hidden; border-radius: 0 0 40px 40px; background: var(--night); color: #fff; display: flex; align-items: flex-end; }
+.hero-loop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-wash { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, .25), rgba(0, 0, 0, .65)); }
+.hero-video-copy { position: relative; width: 100%; padding-bottom: clamp(56px, 9vh, 96px); display: flex; flex-direction: column; gap: 20px; }
+.hero-video-copy .lead { color: rgba(255, 255, 255, .88); }
+.loop-toggle { position: absolute; right: var(--gutter); bottom: 16px; width: 40px; height: 40px; border-radius: 999px; border: 0; background: rgba(255, 255, 255, .2); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.loop-toggle:hover { background: rgba(255, 255, 255, .32); }
+.loop-toggle .i-play, .loop-toggle[aria-pressed="true"] .i-pause { display: none; }
+.loop-toggle[aria-pressed="true"] .i-play { display: block; }
+.hero-video + .section { padding-top: 96px; }
+.phone { width: min(260px, 100%); aspect-ratio: 9 / 19.5; margin-inline: auto; border-radius: 44px; background: var(--ink); padding: 10px; box-shadow: 0 24px 60px rgba(0, 0, 0, .18); }
+.phone .photo-ph { height: 100%; border-radius: 34px; }
+.app-glimpse { gap: 40px; }
+.proof { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px; }
+.proof-num { font-family: var(--f-display); font-size: clamp(28px, 3.2vw, 44px); letter-spacing: -.03em; line-height: 1.1; }
+.faces { display: flex; }
+.photo-ph.face { width: 56px; height: 56px; border-radius: 999px; padding: 0; border: 3px solid var(--card); }
+.photo-ph.face + .photo-ph.face { margin-left: -12px; }
+.founder-row { display: flex; align-items: center; gap: 20px; }
+.founder-big { width: 72px; height: 72px; border-radius: 999px; flex: 0 0 auto; box-shadow: var(--soft); }
+.founder-row .h-4 { margin-bottom: 2px; }
+
+/* ---------- film (dialog on home, inline on coaching) ---------- */
+.film-dialog { width: min(1100px, calc(100vw - 32px)); max-width: none; padding: 0; border: 0; border-radius: 24px; background: #000; color: #fff; overflow: visible; }
+.film-dialog::backdrop { background: rgba(10, 10, 10, .82); }
+.film-frame { aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.film-frame iframe, .vsl-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+.film-close { position: absolute; top: -52px; right: 0; width: 44px; height: 44px; border-radius: 999px; border: 0; background: var(--raised); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.film-soon { font-size: 18px; padding: 24px; text-align: center; color: #fff; }
+
 /* ---------- hero (home + inner pages) ---------- */
 .hero { display: flex; flex-wrap: wrap; gap: 56px; align-items: center; padding-block: 72px 96px; }
 .hero-copy { flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 28px; }

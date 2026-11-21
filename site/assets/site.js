@@ -139,4 +139,68 @@
       });
     });
   });
+
+  // Hero loop (homepage): silent background video, only loaded when motion and data allow
+  var loop = document.querySelector(".hero-loop");
+  if (loop) {
+    var toggle = document.querySelector(".loop-toggle");
+    var conn = navigator.connection;
+    var canPlay = shouldPlayLoop({
+      reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      saveData: !!(conn && conn.saveData)
+    });
+    if (canPlay) {
+      var tall = window.matchMedia("(max-aspect-ratio: 3/4)").matches;
+      if (toggle) loop.addEventListener("playing", function () { toggle.hidden = false; });
+      loop.src = loop.getAttribute(tall ? "data-src-tall" : "data-src-wide");
+      var started = loop.play();
+      if (started && typeof started.catch === "function") started.catch(function () {});
+    }
+    if (toggle) {
+      toggle.addEventListener("click", function () {
+        var pause = !loop.paused;
+        if (pause) loop.pause(); else loop.play();
+        toggle.setAttribute("aria-pressed", pause ? "true" : "false");
+        toggle.setAttribute("aria-label", pause ? "Play background video" : "Pause background video");
+      });
+    }
+  }
+
+  // Film: [data-film] holds a YouTube/Vimeo link; mode "dialog" (homepage) or "inline" (coaching VSL)
+  var filmDialog = document.getElementById("film-dialog");
+  var filmNode = function (link) {
+    var src = embedUrl(link);
+    if (!src) {
+      var soon = document.createElement("p");
+      soon.className = "film-soon";
+      soon.textContent = "The film is coming soon.";
+      return soon;
+    }
+    var frame = document.createElement("iframe");
+    frame.src = src;
+    frame.title = "Dawnage film";
+    frame.allow = "autoplay; fullscreen; picture-in-picture";
+    frame.setAttribute("allowfullscreen", "");
+    return frame;
+  };
+  document.querySelectorAll("[data-film]").forEach(function (filmBtn) {
+    filmBtn.addEventListener("click", function () {
+      var node = filmNode(filmBtn.getAttribute("data-film"));
+      if (filmBtn.getAttribute("data-film-mode") === "inline") {
+        var holder = filmBtn.closest(".vsl-frame");
+        if (holder) holder.replaceChildren(node);
+        return;
+      }
+      if (!filmDialog || typeof filmDialog.showModal !== "function") return;
+      filmDialog.querySelector(".film-frame").replaceChildren(node);
+      filmDialog.showModal();
+    });
+  });
+  if (filmDialog) {
+    // Emptying the frame on close stops playback and sound
+    filmDialog.addEventListener("close", function () { filmDialog.querySelector(".film-frame").replaceChildren(); });
+    filmDialog.addEventListener("click", function (e) { if (e.target === filmDialog) filmDialog.close(); });
+    var filmClose = filmDialog.querySelector(".film-close");
+    if (filmClose) filmClose.addEventListener("click", function () { filmDialog.close(); });
+  }
 })();
