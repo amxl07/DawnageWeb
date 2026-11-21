@@ -229,5 +229,22 @@ class Coaching(unittest.TestCase):
         self.assertEqual(len(summaries), 5)
 
 
+class Trimmed(unittest.TestCase):
+    def test_anchor_targets_exist(self):
+        self.assertTrue({"run-club", "sencs"} <= ids("community.html"))
+        self.assertTrue({"guides", "ebooks", "calculators"} <= ids("resources.html"))
+        self.assertTrue({"contact", "team"} <= ids("about.html"))
+
+    def test_no_census(self):
+        self.assertEqual([p for p in pages() if "Census" in read(p)], [])
+
+    def test_trimmed(self):
+        count = lambda p: len(re.findall(r"<section\b", main_html(p)))
+        self.assertLessEqual(count("community.html"), 4)
+        self.assertLessEqual(count("resources.html"), 4)
+        self.assertLessEqual(count("about.html"), 3)
+        self.assertNotIn("Courses", text("resources.html"))
+
+
 if __name__ == "__main__":
     unittest.main()
