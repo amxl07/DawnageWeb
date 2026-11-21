@@ -2,13 +2,78 @@
   "cleanUrls": true,
   "redirects": [
     {
+      "source": "/dawnage-ai",
+      "destination": "/coaching",
+      "permanent": true
+    },
+    {
+      "source": "/fat-loss",
+      "destination": "/coaching#goals",
+      "permanent": true
+    },
+    {
+      "source": "/muscle-gain",
+      "destination": "/coaching#goals",
+      "permanent": true
+    },
+    {
+      "source": "/body-recomposition",
+      "destination": "/coaching#goals",
+      "permanent": true
+    },
+    {
+      "source": "/calisthenics",
+      "destination": "/coaching#goals",
+      "permanent": true
+    },
+    {
+      "source": "/apply",
+      "destination": "/coaching#apply",
+      "permanent": true
+    },
+    {
+      "source": "/faq",
+      "destination": "/coaching#faq",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/about#contact",
+      "permanent": true
+    },
+    {
+      "source": "/run-club",
+      "destination": "/community#run-club",
+      "permanent": true
+    },
+    {
+      "source": "/the-census",
+      "destination": "/community#sencs",
+      "permanent": true
+    },
+    {
+      "source": "/guides",
+      "destination": "/resources#guides",
+      "permanent": true
+    },
+    {
+      "source": "/ebooks",
+      "destination": "/resources#ebooks",
+      "permanent": true
+    },
+    {
+      "source": "/calculators",
+      "destination": "/resources#calculators",
+      "permanent": true
+    },
+    {
       "source": "/membership",
-      "destination": "/coaching#plans",
+      "destination": "/coaching",
       "permanent": true
     },
     {
       "source": "/store",
-      "destination": "/ebooks",
+      "destination": "/resources#ebooks",
       "permanent": true
     }
   ]

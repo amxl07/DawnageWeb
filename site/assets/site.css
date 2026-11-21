@@ -375,11 +375,10 @@ a.res-row:hover { box-shadow: var(--soft); }
 .foot-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; }
 .foot-brand { flex: 1 1 260px; display: flex; flex-direction: column; gap: 14px; }
 .foot-brand .tag { font-size: 13px; font-weight: 600; letter-spacing: .16em; }
-.foot-cols { flex: 3 1 560px; display: flex; flex-wrap: wrap; gap: 32px; }
-.foot-col { flex: 1 1 140px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; }
-.foot-col b { font-weight: 600; }
-.foot-col a { text-decoration: none; color: var(--ink-2); padding: 2px 0; }
-.foot-col a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.foot-links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; font-size: 15px; }
+.foot-links a { text-decoration: none; color: var(--ink-2); padding: 2px 0; }
+.foot-links a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.foot-links a.link-arrow { color: var(--ink); }
 .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-top: 24px; border-top: 1px solid #D5D5D4; font-size: 14px; color: var(--ink-2); }
 .foot-bottom nav { display: flex; flex-wrap: wrap; gap: 20px; }
 .foot-bottom a { text-decoration: none; color: var(--ink-2); }
