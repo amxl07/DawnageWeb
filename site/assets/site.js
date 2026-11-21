@@ -203,4 +203,66 @@
     var filmClose = filmDialog.querySelector(".film-close");
     if (filmClose) filmClose.addEventListener("click", function () { filmDialog.close(); });
   }
+
+  // Client stories carousel (coaching page): scroll-snap track + prev/next + counter
+  document.querySelectorAll("[data-carousel]").forEach(function (box) {
+    var track = box.querySelector(".stories-track");
+    if (!track) return;
+    var count = track.children.length;
+    var prev = box.querySelector("[data-prev]");
+    var next = box.querySelector("[data-next]");
+    var current = box.querySelector("[data-current]");
+    var smooth = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    var update = function () {
+      var i = storyIndex(track.scrollLeft, track.clientWidth, count);
+      if (current) current.textContent = i;
+      if (prev) prev.disabled = i === 1;
+      if (next) next.disabled = i === count;
+    };
+    if (prev) prev.addEventListener("click", function () { track.scrollBy({ left: -track.clientWidth, behavior: smooth }); });
+    if (next) next.addEventListener("click", function () { track.scrollBy({ left: track.clientWidth, behavior: smooth }); });
+    track.addEventListener("scroll", update, { passive: true });
+    update();
+  });
+
+  // Apply form (coaching page): save to the Google Sheet, then open WhatsApp with the answers
+  var form = document.getElementById("apply-form");
+  if (form) {
+    var goalSlug = new URLSearchParams(window.location.search).get("goal");
+    if (goalSlug) {
+      var goalOpt = form.querySelector('option[data-slug="' + goalSlug.replace(/[^a-z-]/g, "") + '"]');
+      if (goalOpt) goalOpt.selected = true;
+    }
+    var applyStatus = document.getElementById("apply-status");
+    var waLink = document.getElementById("apply-wa-link");
+    var showError = function (name, msg) {
+      var field = form.querySelector('[data-field="' + name + '"]');
+      if (!field) return;
+      var err = field.querySelector(".err");
+      field.classList.toggle("invalid", !!msg);
+      if (err) { err.textContent = msg || ""; err.hidden = !msg; }
+    };
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var data = {};
+      ["name", "whatsapp", "goal", "obstacle", "start", "website"].forEach(function (k) {
+        data[k] = form.elements[k] ? form.elements[k].value : "";
+      });
+      var errors = submitApplication(data, {
+        waNumber: form.getAttribute("data-wa"),
+        sheetUrl: form.getAttribute("data-sheet") || "",
+        pageUrl: window.location.href,
+        now: function () { return new Date().toISOString(); },
+        fetch: function (url, opts) { return window.fetch(url, opts); },
+        navigate: function (url) {
+          if (waLink) waLink.href = url;
+          if (applyStatus) applyStatus.hidden = false;
+          window.location.href = url;
+        }
+      });
+      ["name", "whatsapp", "goal"].forEach(function (k) { showError(k, errors[k]); });
+      var firstBad = form.querySelector(".invalid input, .invalid select");
+      if (firstBad) firstBad.focus();
+    });
+  }
 })();

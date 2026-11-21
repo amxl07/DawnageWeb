@@ -176,5 +176,58 @@ class Home(unittest.TestCase):
         self.assertNotIn("<details", main)
 
 
+class Coaching(unittest.TestCase):
+    def test_coaching_funnel(self):
+        html = read("coaching.html")
+        header = re.search(r"<header.*?</header>", html, re.S).group(0)
+        self.assertNotIn("nav-links", html)
+        self.assertNotIn("menu-btn", html)
+        self.assertIn('href="index.html"', header)
+        self.assertIn('href="#apply"', header)
+        self.assertTrue({"results", "goals", "faq", "apply", "apply-form", "apply-status"} <= ids("coaching.html"))
+        other = {"community.html", "hq.html", "resources.html", "about.html"}
+        self.assertEqual([u for u in links("coaching.html") if u.split("#")[0] in other], [])
+
+    def test_coaching_form(self):
+        html = read("coaching.html")
+        form = re.search(r'<form[^>]*id="apply-form".*?</form>', html, re.S).group(0)
+        names = re.findall(r'<(?:input|select|textarea)[^>]*name="([^"]+)"', form)
+        self.assertEqual(names, ["name", "whatsapp", "goal", "obstacle", "start", "website"])
+        def options(name):
+            sel = re.search(r'<select[^>]*name="%s".*?</select>' % name, form, re.S).group(0)
+            return re.findall(r'<option[^>]*value="([^"]*)"', sel)
+        self.assertEqual(options("goal"), ["", "Fat loss", "Muscle building", "HYROX prep", "Calisthenics", "Something else"])
+        self.assertEqual(options("start"), ["", "Right away", "In the next 2 weeks", "Within a month", "Just exploring"])
+        tag = re.search(r'<form[^>]*>', form).group(0)
+        self.assertIn('data-wa="917907612261"', tag)
+        self.assertIn("data-sheet=", tag)
+        for m in re.finditer(r'<(input|select|textarea)([^>]*)>', form):
+            attrs = m.group(2)
+            if 'name="website"' in attrs or 'type="hidden"' in attrs:
+                continue
+            fid = re.search(r'id="([^"]+)"', attrs).group(1)
+            self.assertIn(f'<label for="{fid}"', form, fid)
+
+    def test_coaching_sections(self):
+        main = main_html("coaching.html")
+        self.assertEqual(len(re.findall(r"<section\b", main)), 7)
+        self.assertEqual(len(re.findall(r'<article class="story', main)), 6)
+        t = text("coaching.html")
+        for gone in ("What happens after you apply", "Plans", "\u20b9"):
+            self.assertNotIn(gone, t)
+
+    def test_faq_jsonld(self):
+        html = read("coaching.html")
+        data = None
+        for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.S):
+            d = json.loads(block)
+            if d.get("@type") == "FAQPage":
+                data = d
+        self.assertIsNotNone(data)
+        summaries = [re.sub(r"<[^>]+>", "", s).strip() for s in re.findall(r"<summary>(.*?)<span", html, re.S)]
+        self.assertEqual([q["name"] for q in data["mainEntity"]], summaries)
+        self.assertEqual(len(summaries), 5)
+
+
 if __name__ == "__main__":
     unittest.main()
