@@ -2,6 +2,7 @@
 
 Run from the dawnage-website folder:  python3 -m unittest tests/check_site.py -v
 """
+import html
 import json
 import re
 import unittest
@@ -17,7 +18,7 @@ DELETED = ["dawnage-ai", "fat-loss", "muscle-gain", "body-recomposition", "calis
 REDIRECTS = {"/dawnage-ai": "/coaching", "/fat-loss": "/coaching#goals", "/muscle-gain": "/coaching#goals",
              "/body-recomposition": "/coaching#goals", "/calisthenics": "/coaching#goals", "/apply": "/coaching#apply",
              "/faq": "/coaching#faq", "/contact": "/about#contact", "/run-club": "/community#run-club",
-             "/the-census": "/community#sencs", "/guides": "/resources#guides", "/ebooks": "/resources#ebooks",
+             "/the-census": "/community#the-senses", "/guides": "/resources#guides", "/ebooks": "/resources#ebooks",
              "/calculators": "/resources#calculators", "/membership": "/coaching", "/store": "/resources#ebooks",
              "/index": "/"}
 NAV = ["coaching.html", "community.html", "hq.html", "resources.html", "about.html"]
@@ -81,7 +82,7 @@ def resolve(page, url):
 
 def text(page):
     s = re.sub(r"<script.*?</script>|<style.*?</style>", " ", read(page), flags=re.S)
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s))
+    return html.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s)))
 
 
 def main_html(page):
@@ -231,7 +232,7 @@ class Coaching(unittest.TestCase):
 
 class Trimmed(unittest.TestCase):
     def test_anchor_targets_exist(self):
-        self.assertTrue({"run-club", "sencs"} <= ids("community.html"))
+        self.assertTrue({"run-club", "the-senses"} <= ids("community.html"))
         self.assertTrue({"guides", "ebooks", "calculators"} <= ids("resources.html"))
         self.assertTrue({"contact", "team"} <= ids("about.html"))
 
@@ -240,7 +241,6 @@ class Trimmed(unittest.TestCase):
 
     def test_trimmed(self):
         count = lambda p: len(re.findall(r"<section\b", main_html(p)))
-        self.assertLessEqual(count("community.html"), 4)
         self.assertLessEqual(count("resources.html"), 4)
         self.assertLessEqual(count("about.html"), 3)
         self.assertNotIn("Courses", text("resources.html"))
@@ -255,7 +255,7 @@ class Fragments(unittest.TestCase):
                     continue
                 path, frag = u.split("#", 1)
                 target = p if not path.split("?")[0] else resolve(p, path).name
-                if frag and frag not in ids(target):
+                if frag and not frag.endswith("-needed") and frag not in ids(target):
                     broken.append((p, u))
         for src, dest in REDIRECTS.items():
             if "#" in dest:
@@ -288,6 +288,39 @@ class ReviewFixes(unittest.TestCase):
         import subprocess
         tracked = subprocess.run(["git", "ls-files"], cwd=SITE.parent, capture_output=True, text=True).stdout
         self.assertNotIn("__pycache__", tracked)
+
+
+class CommunityTheme(unittest.TestCase):
+    def test_dark_theme_and_fonts(self):
+        html = read("community.html")
+        self.assertIn('<body class="community">', html)
+        self.assertIn("Instrument+Serif", html)
+        self.assertIn("Archivo", html)
+        others = [p for p in pages() if p != "community.html" and "Instrument+Serif" in read(p)]
+        self.assertEqual(others, [])
+
+    def test_sections_and_copy(self):
+        self.assertEqual(len(re.findall(r"<section\b", main_html("community.html"))), 6)
+        t = text("community.html")
+        for line in ("Dawnage community / Kochi", "Find your people.", "Move together.", "Shared movement. New experiences.",
+                     "80+", "Saturdays hosted", "150–200", "Weekly registrations", "Every Saturday. Something worth showing up for.",
+                     "A Saturday worth showing up for.", "Powered by", "Reebok", "Hydration partner", "Fast&Up",
+                     "More than a morning run.", "Move together.", "Try something new.", "Stay for the conversations.",
+                     "We share the hard days, too.", "Marathons. HYROX. Shared effort.",
+                     "The Senses", "Coming soon", "Make room to slow down.", "invitation-only wellness experience",
+                     "Come for the experience.", "Stay for the people."):
+            self.assertIn(line, t, line)
+
+    def test_calls_to_action(self):
+        main = main_html("community.html")
+        self.assertIn('href="#run-club"', main)
+        self.assertGreaterEqual(main.count("https://wa.me/917907612261"), 3)
+        self.assertGreaterEqual(main.count("#instagram-url-needed"), 2)
+
+    def test_the_senses_renamed_everywhere(self):
+        hits = [p for p in pages() if "SENCS" in read(p)]
+        self.assertEqual(hits, [])
+        self.assertIn("The Senses", text("index.html"))
 
 
 if __name__ == "__main__":

@@ -60,9 +60,11 @@ Anything the client still needs to supply is shown with a **dashed underline and
 | Up to 6 client stories: before/after photos, result, starting point, coach's change (with consent) | Coaching |
 | Number of clients coached + 3 client photos | Home |
 | Founder story (two lines), coach names and specialities, coach portraits | About |
-| Run Club day, time, meeting point | Community |
-| What SENCS is (one line) | Community |
-| Team race and outing photos | Community |
+| Run Club: Instagram link, WhatsApp updates link (group/channel), a Saturday run photo | Community |
+| Confirm 80+ Saturdays hosted and 150–200 weekly registrations | Community |
+| Reebok and Fast&Up logos (white versions) and permission to show them | Community |
+| Real photos to replace the 3 concept images (`photos/concept-*.webp`) | Community |
+| The Senses: confirm name and wording, launch timing | Community |
 | HQ address, hours, Google Maps link, studio photo | Dawnage HQ, About |
 | Contact email | About |
 | Ebook titles, one-liners and prices | Resources |

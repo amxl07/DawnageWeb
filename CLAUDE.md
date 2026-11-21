@@ -1,6 +1,6 @@
 # Dawnage website: notes for Claude Code
 
-This is a static website for Dawnage, founded by Nipun Fitness. It covers coaching, the community (Run Club, SENCS) and Dawnage HQ, the studio in Kochi.
+This is a static website for Dawnage, founded by Nipun Fitness. It covers coaching, the community (Run Club, The Senses by Dawnage) and Dawnage HQ, the studio in Kochi.
 The person asking for changes is a designer, not a developer. Make the change, then say in a sentence or two what changed and which pages. Don't ask them to run commands.
 
 ## How it's built
@@ -28,6 +28,7 @@ The person asking for changes is a designer, not a developer. Make the change, t
 - `node --test tests/site.test.mjs` checks the apply form, WhatsApp message and video-link logic.
 
 ## Design rules (Soft Strength)
+- **Exception: `community.html` has its own dark theme** (`<body class="community">`): warm red blurred backgrounds, Archivo (wide, bold) headings and Instrument Serif accents. Those two fonts load on that page only. Its header and footer use the same markup as every other page; they're restyled by `body.community` rules in `site.css`. The theme's CSS is grouped under `/* community */` at the end of `site.css`, with classes prefixed `c-`.
 - Soft grey surfaces, ink text, brand orange `#FF4E00` (taken from the logo files) as the only accent. Fonts: Familjen Grotesk (headings), Instrument Sans (body).
 - Text on orange is dark ink, never white. Never put small orange text on a light background (fails contrast).
 - Big rounded corners (24–40px), pill buttons, generous spacing. Match the look of what's already there.
@@ -53,7 +54,7 @@ The person asking for changes is a designer, not a developer. Make the change, t
   - Cut-out portraits on a transparent background get the extra class `portrait`.
   - Write alt text that describes the photo.
 - Photo look: mood/stock photos are black-and-white with softened blacks (see `site/photos/README.txt`); photos of real Dawnage people stay in colour.
-- Never use stock photos for coaches, members, Run Club, SENCS, testimonials or before/after. Those slots stay as placeholders until real photos arrive.
+- Never use stock photos for coaches, members, Run Club, The Senses, testimonials or before/after. Those slots stay as placeholders until real photos arrive.
 - **Video:**
   - Homepage hero loop: `site/media/hero-loop.mp4` (landscape) and `site/media/hero-loop-vertical.mp4` (phones). Each should be 10–15s, H.264, no audio track, at most about 4 MB.
   - The poster (still frame) is the `poster` attribute on `<video class="hero-loop">` in `index.html`.
@@ -64,6 +65,8 @@ The person asking for changes is a designer, not a developer. Make the change, t
 - **Apply form** (`coaching.html#apply`): Submit saves the answers to a Google Sheet, then opens WhatsApp with the answers typed out.
   - The Sheet's web-app URL goes in `data-sheet="…"` on `<form id="apply-form">`. Setup steps: `docs/google-sheet-setup.md`.
   - Links can pre-select a goal: `coaching.html?goal=fat-loss#apply` (`fat-loss`, `muscle-building`, `hyrox`, `calisthenics`, `other`).
+- Placeholder links whose real address isn't known yet use a fragment ending in `-needed` (for example `#instagram-url-needed` on the Community page). Replace every one when the real link arrives.
+- Community blurred backgrounds are set as `style="background-image:url(photos/…)"` on the `c-hero-bg`, `c-more-bg` and `c-senses-bg` layers. Swap the file name to change them. The current `photos/concept-*.webp` files are cut from the design concept and must be replaced with Dawnage's own photos before launch.
 - Client stories (`coaching.html#results`): add or remove whole `<article class="story">` blocks (up to 6). The counter and labels update themselves.
 - The coaching app is for enrolled clients only and isn't in the app stores yet: no download buttons or store badges until it is.
 - Dawnage AI (the old WhatsApp assistant) no longer exists. Don't mention it.
