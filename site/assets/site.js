@@ -1,6 +1,87 @@
-/* Dawnage site behaviour: mobile menu, scroll reveal, guide filters, apply form → WhatsApp. */
+/* Dawnage site behaviour: mobile menu, scroll reveal, guide filters, hero video, film, stories, apply form. */
 (function () {
   "use strict";
+
+  // ---------- Pure helpers (unit-tested in tests/site.test.mjs) ----------
+  var MSG = {
+    name: "Please enter your name.",
+    whatsapp: "Please enter your WhatsApp number with country code, e.g. +91 98765 43210.",
+    goal: "Please choose your main goal."
+  };
+  var str = function (v) { return String(v == null ? "" : v).trim(); };
+
+  function validateApplication(data) {
+    var errors = {};
+    if (!str(data.name)) errors.name = MSG.name;
+    var digits = str(data.whatsapp).replace(/[^0-9]/g, "");
+    if (digits.length < 10 || digits.length > 15) errors.whatsapp = MSG.whatsapp;
+    if (!str(data.goal)) errors.goal = MSG.goal;
+    return errors;
+  }
+
+  function buildWhatsAppUrl(number, data) {
+    var v = function (k) { return str(data[k]) || "-"; };
+    var msg = "Hi Dawnage, I'd like to apply for coaching." +
+      "\nName: " + v("name") + "\nWhatsApp: " + v("whatsapp") + "\nGoal: " + v("goal") +
+      "\nBiggest obstacle: " + v("obstacle") + "\nStart: " + v("start");
+    return "https://wa.me/" + number + "?text=" + encodeURIComponent(msg);
+  }
+
+  function buildSheetBody(data, pageUrl, isoTime) {
+    var p = new URLSearchParams();
+    p.append("timestamp", isoTime);
+    ["name", "whatsapp", "goal", "obstacle", "start"].forEach(function (k) { p.append(k, str(data[k])); });
+    p.append("page", pageUrl);
+    return p.toString();
+  }
+
+  // Saves to the Sheet (fire-and-forget) and always opens WhatsApp; never waits on the save.
+  function submitApplication(data, deps) {
+    var errors = validateApplication(data);
+    if (Object.keys(errors).length) return errors;
+    if (!str(data.website) && str(deps.sheetUrl)) {
+      try {
+        var r = deps.fetch(str(deps.sheetUrl), {
+          method: "POST", mode: "no-cors", keepalive: true,
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: buildSheetBody(data, deps.pageUrl, deps.now())
+        });
+        if (r && typeof r.catch === "function") r.catch(function () {});
+      } catch (e) { /* the WhatsApp step below still runs */ }
+    }
+    deps.navigate(buildWhatsAppUrl(deps.waNumber, data));
+    return errors;
+  }
+
+  // YouTube / Vimeo share link → embed URL; "" when not recognised.
+  function embedUrl(shareUrl) {
+    var u;
+    try { u = new URL(str(shareUrl)); } catch (e) { return ""; }
+    var host = u.hostname.replace(/^(www\.|m\.)/, "");
+    var parts = u.pathname.split("/").filter(Boolean);
+    var id = "";
+    if (host === "youtu.be") id = parts[0] || "";
+    else if (host === "youtube.com" || host === "youtube-nocookie.com") {
+      if (parts[0] === "watch") id = u.searchParams.get("v") || "";
+      else if (parts[0] === "shorts" || parts[0] === "embed") id = parts[1] || "";
+    } else if (host === "vimeo.com" && /^\d+$/.test(parts[0] || "")) {
+      var h = parts[1] && /^[\da-f]+$/i.test(parts[1]) ? "&h=" + parts[1] : "";
+      return "https://player.vimeo.com/video/" + parts[0] + "?autoplay=1" + h;
+    }
+    return /^[\w-]{11}$/.test(id) ? "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0&playsinline=1" : "";
+  }
+
+  function shouldPlayLoop(env) { return !env.reducedMotion && !env.saveData; }
+
+  function storyIndex(scrollLeft, width, count) {
+    if (!(width > 0)) return 1;
+    return Math.min(count, Math.max(1, Math.round(scrollLeft / width) + 1));
+  }
+
+  window.Dawnage = {
+    validateApplication: validateApplication, buildWhatsAppUrl: buildWhatsAppUrl, buildSheetBody: buildSheetBody,
+    submitApplication: submitApplication, embedUrl: embedUrl, shouldPlayLoop: shouldPlayLoop, storyIndex: storyIndex
+  };
 
   // Mobile menu
   var btn = document.querySelector(".menu-btn");
@@ -58,61 +139,4 @@
       });
     });
   });
-
-  // Apply form → WhatsApp (nothing is stored or sent anywhere else)
-  var form = document.getElementById("apply-form");
-  if (form) {
-    var number = form.getAttribute("data-wa");
-    var template = form.getAttribute("data-template");
-    // Pre-fill from links like apply.html?goal=fat-loss or apply.html?plan=Growth
-    var params = new URLSearchParams(window.location.search);
-    var goalSlug = params.get("goal");
-    if (goalSlug) {
-      var radio = form.querySelector('input[name="goal"][data-slug="' + goalSlug.replace(/[^a-z-]/g, "") + '"]');
-      if (radio) radio.checked = true;
-    }
-    var plan = (params.get("plan") || "").replace(/[^\w ]/g, "").slice(0, 30);
-    var chip = document.getElementById("plan-chip");
-    if (plan && chip) { chip.textContent = "Plan: " + plan; chip.hidden = false; }
-    var setErr = function (name, msg) {
-      var field = form.querySelector('[data-field="' + name + '"]');
-      if (!field) return;
-      var err = field.querySelector(".err");
-      field.classList.toggle("invalid", !!msg);
-      if (err) { err.textContent = msg || ""; err.hidden = !msg; }
-    };
-    var val = function (name) {
-      var el = form.elements[name];
-      if (!el) return "";
-      if (el.length !== undefined && el.tagName !== "SELECT") {
-        for (var i = 0; i < el.length; i++) if (el[i].checked) return el[i].value;
-        return "";
-      }
-      return (el.value || "").trim();
-    };
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var data = {
-        name: val("name"), whatsapp: val("whatsapp"), goal: val("goal"),
-        experience: val("experience"), callTime: val("callTime"), notes: val("notes")
-      };
-      var ok = true;
-      setErr("name", data.name ? "" : "Please enter your name."); if (!data.name) ok = false;
-      var digits = data.whatsapp.replace(/[^0-9]/g, "");
-      var phoneOk = digits.length >= 10 && digits.length <= 15;
-      setErr("whatsapp", phoneOk ? "" : "Please enter your WhatsApp number with country code, e.g. +91 98765 43210."); if (!phoneOk) ok = false;
-      setErr("goal", data.goal ? "" : "Please choose a goal."); if (!data.goal) ok = false;
-      if (!ok) {
-        var firstBad = form.querySelector(".invalid input, .invalid textarea");
-        if (firstBad) firstBad.focus();
-        return;
-      }
-      var msg = template.replace(/\{(\w+)\}/g, function (_, k) { return data[k] || "-"; });
-      if (plan) msg += "\nPlan: " + plan;
-      var url = "https://wa.me/" + number + "?text=" + encodeURIComponent(msg);
-      var status = document.getElementById("apply-status");
-      if (status) { status.hidden = false; }
-      window.location.href = url;
-    });
-  }
 })();
