@@ -246,5 +246,24 @@ class Trimmed(unittest.TestCase):
         self.assertNotIn("Courses", text("resources.html"))
 
 
+class Fragments(unittest.TestCase):
+    def test_fragments_resolve(self):
+        broken = []
+        for p in pages():
+            for u in links(p):
+                if not (is_internal(u) or u.startswith("#")) or "#" not in u or u == "#main":
+                    continue
+                path, frag = u.split("#", 1)
+                target = p if not path.split("?")[0] else resolve(p, path).name
+                if frag and frag not in ids(target):
+                    broken.append((p, u))
+        for src, dest in REDIRECTS.items():
+            if "#" in dest:
+                page, frag = dest.lstrip("/").split("#")
+                if frag not in ids((page or "index") + ".html"):
+                    broken.append(("redirect " + src, dest))
+        self.assertEqual(broken, [])
+
+
 if __name__ == "__main__":
     unittest.main()
