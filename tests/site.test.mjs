@@ -164,3 +164,44 @@ test("storyIndex", () => {
   assert.equal(D.storyIndex(5000, 300, 6), 6);
   assert.equal(D.storyIndex(10, 0, 6), 1);
 });
+
+test("embedUrl accepts live links, Vimeo player links and links without https", () => {
+  const yt = "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0&playsinline=1";
+  assert.equal(D.embedUrl("youtu.be/dQw4w9WgXcQ"), yt);
+  assert.equal(D.embedUrl("www.youtube.com/watch?v=dQw4w9WgXcQ"), yt);
+  assert.equal(D.embedUrl("https://www.youtube.com/live/dQw4w9WgXcQ?si=x"), yt);
+  assert.equal(D.embedUrl("https://player.vimeo.com/video/123456789?h=abcdef1234&badge=0"),
+    "https://player.vimeo.com/video/123456789?autoplay=1&h=abcdef1234");
+  assert.equal(D.embedUrl("https://player.vimeo.com/video/123456789"), "https://player.vimeo.com/video/123456789?autoplay=1");
+});
+
+test("carousel counter and labels follow the real number of stories", () => {
+  const el = (extra = {}) => ({ attrs: {}, textContent: "", disabled: false,
+    setAttribute(k, v) { this.attrs[k] = String(v); }, getAttribute(k) { return this.attrs[k]; }, addEventListener() {}, ...extra });
+  const stories = [el(), el(), el(), el()];
+  const track = el({ children: stories, scrollLeft: 0, clientWidth: 300, scrollBy() {} });
+  const parts = { ".stories-track": track, "[data-prev]": el(), "[data-next]": el(), "[data-current]": el(), "[data-total]": el() };
+  const box = el({ querySelector: (s) => parts[s] || null });
+  const doc = { ...document, querySelectorAll: (s) => (s === "[data-carousel]" ? [box] : []) };
+  const c2 = { window: { ...window }, document: doc, URL, URLSearchParams, navigator: {} };
+  vm.runInNewContext(code, c2);
+  assert.equal(String(parts["[data-total]"].textContent), "4");
+  assert.equal(String(parts["[data-current]"].textContent), "1");
+  assert.equal(stories[3].attrs["aria-label"], "Client story 4 of 4");
+  assert.equal(parts["[data-prev]"].disabled, true);
+  assert.equal(parts["[data-next]"].disabled, false);
+});
+
+test("Sheet script stores every answer as text and stamps the time itself", () => {
+  const doc = readFileSync(new URL("../docs/google-sheet-setup.md", import.meta.url), "utf8");
+  const script = doc.match(/```js\n([\s\S]*?)```/)[1];
+  let row;
+  const sheetCtx = {
+    SpreadsheetApp: { getActiveSpreadsheet: () => ({ getSheetByName: (n) => (n === "Applications" ? { appendRow: (r) => { row = r; } } : null) }) },
+    ContentService: { createTextOutput: (t) => t },
+  };
+  vm.runInNewContext(script + "\nthis.out = doPost({ parameter: { timestamp: '2026-11-21T10:00:00.000Z', name: '=1+1', whatsapp: '09876543210', goal: 'Fat loss', obstacle: '1/2', start: '', page: 'x' } });", sheetCtx);
+  assert.equal(sheetCtx.out, "ok");
+  assert.equal(Object.prototype.toString.call(row[0]), "[object Date]", "time is a Date made by the script");
+  assert.deepEqual(JSON.parse(JSON.stringify(row.slice(1))), ["'=1+1", "'09876543210", "'Fat loss", "'1/2", "'", "'x"]);
+});

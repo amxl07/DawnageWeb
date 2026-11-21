@@ -55,18 +55,22 @@
 
   // YouTube / Vimeo share link → embed URL; "" when not recognised.
   function embedUrl(shareUrl) {
-    var u;
-    try { u = new URL(str(shareUrl)); } catch (e) { return ""; }
+    var u, raw = str(shareUrl);
+    if (raw && !/^https?:\/\//i.test(raw)) raw = "https://" + raw;
+    try { u = new URL(raw); } catch (e) { return ""; }
     var host = u.hostname.replace(/^(www\.|m\.)/, "");
     var parts = u.pathname.split("/").filter(Boolean);
     var id = "";
     if (host === "youtu.be") id = parts[0] || "";
     else if (host === "youtube.com" || host === "youtube-nocookie.com") {
       if (parts[0] === "watch") id = u.searchParams.get("v") || "";
-      else if (parts[0] === "shorts" || parts[0] === "embed") id = parts[1] || "";
+      else if (parts[0] === "shorts" || parts[0] === "embed" || parts[0] === "live") id = parts[1] || "";
     } else if (host === "vimeo.com" && /^\d+$/.test(parts[0] || "")) {
       var h = parts[1] && /^[\da-f]+$/i.test(parts[1]) ? "&h=" + parts[1] : "";
       return "https://player.vimeo.com/video/" + parts[0] + "?autoplay=1" + h;
+    } else if (host === "player.vimeo.com" && parts[0] === "video" && /^\d+$/.test(parts[1] || "")) {
+      var ph = /^[\da-f]+$/i.test(u.searchParams.get("h") || "") ? "&h=" + u.searchParams.get("h") : "";
+      return "https://player.vimeo.com/video/" + parts[1] + "?autoplay=1" + ph;
     }
     return /^[\w-]{11}$/.test(id) ? "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0&playsinline=1" : "";
   }
@@ -212,6 +216,11 @@
     var prev = box.querySelector("[data-prev]");
     var next = box.querySelector("[data-next]");
     var current = box.querySelector("[data-current]");
+    var total = box.querySelector("[data-total]");
+    if (total) total.textContent = count;
+    Array.prototype.forEach.call(track.children, function (story, i) {
+      story.setAttribute("aria-label", "Client story " + (i + 1) + " of " + count);
+    });
     var smooth = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
     var update = function () {
       var i = storyIndex(track.scrollLeft, track.clientWidth, count);

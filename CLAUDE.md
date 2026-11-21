@@ -64,6 +64,7 @@ The person asking for changes is a designer, not a developer. Make the change, t
 - **Apply form** (`coaching.html#apply`): Submit saves the answers to a Google Sheet, then opens WhatsApp with the answers typed out.
   - The Sheet's web-app URL goes in `data-sheet="…"` on `<form id="apply-form">`. Setup steps: `docs/google-sheet-setup.md`.
   - Links can pre-select a goal: `coaching.html?goal=fat-loss#apply` (`fat-loss`, `muscle-building`, `hyrox`, `calisthenics`, `other`).
+- Client stories (`coaching.html#results`): add or remove whole `<article class="story">` blocks (up to 6). The counter and labels update themselves.
 - The coaching app is for enrolled clients only and isn't in the app stores yet: no download buttons or store badges until it is.
 - Dawnage AI (the old WhatsApp assistant) no longer exists. Don't mention it.
 - WhatsApp: `https://wa.me/917907612261?text=…` (text URL-encoded).

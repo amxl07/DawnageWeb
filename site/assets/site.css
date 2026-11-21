@@ -136,11 +136,12 @@ body.home .site-header { position: absolute; top: 0; left: 0; right: 0; }
 .founder-row .h-4 { margin-bottom: 2px; }
 
 /* ---------- film (dialog on home, inline on coaching) ---------- */
-.film-dialog { width: min(1100px, calc(100vw - 32px)); max-width: none; padding: 0; border: 0; border-radius: 24px; background: #000; color: #fff; overflow: visible; }
+.film-dialog { width: min(1100px, calc(100vw - 32px), calc((100vh - 136px) * 16 / 9)); width: min(1100px, calc(100vw - 32px), calc((100dvh - 136px) * 16 / 9)); max-width: none; max-height: none; padding: 0; border: 0; border-radius: 24px; background: #000; color: #fff; overflow: visible; }
 .film-dialog::backdrop { background: rgba(10, 10, 10, .82); }
 .film-frame { aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .film-frame iframe, .vsl-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
 .film-close { position: absolute; top: -52px; right: 0; width: 44px; height: 44px; border-radius: 999px; border: 0; background: var(--raised); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.hero-video :focus-visible, .vsl-frame :focus-visible, .film-dialog :focus-visible { outline-color: #fff; }
 .film-soon { font-size: 18px; padding: 24px; text-align: center; color: #fff; }
 
 /* ---------- hero (home + inner pages) ---------- */
@@ -449,6 +450,7 @@ a.res-row:hover { box-shadow: var(--soft); }
 .funnel-label { font-weight: 600; font-size: 15px; color: var(--ink-2); }
 @media (max-width: 900px) { .funnel-label { display: none; } }
 @media (max-width: 560px) { .hide-sm { display: none; } }
+@media (max-width: 380px) { .funnel-header .brand img { width: 150px; height: auto; } }
 .vsl-hero { padding-block: 56px 96px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px; }
 .vsl-hero .chip { align-self: center; }
 .vsl-hero .lead { max-width: 640px; }

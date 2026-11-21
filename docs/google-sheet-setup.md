@@ -24,16 +24,16 @@ This takes about 10 minutes and is done once, in the Dawnage Google account.
 
 ```js
 function doPost(e) {
-  var p = e.parameter, clean = function (v) { v = String(v || ""); return /^[=+\-@]/.test(v) ? "'" + v : v; };
+  var p = e.parameter, text = function (v) { return "'" + String(v || ""); };
   SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Applications")
-    .appendRow([p.timestamp, p.name, p.whatsapp, p.goal, p.obstacle, p.start, p.page].map(clean));
+    .appendRow([new Date()].concat([p.name, p.whatsapp, p.goal, p.obstacle, p.start, p.page].map(text)));
   return ContentService.createTextOutput("ok");
 }
 ```
 
 3. Press the save icon.
 
-The `clean` part stops anyone from typing a spreadsheet formula into the form. Their answer is always stored as plain text.
+The `text` part stores every answer exactly as typed, as plain text. That way phone numbers keep their leading 0, answers like 1/2 don't turn into dates, and nobody can slip a spreadsheet formula in through the form. The Time column uses the Sheet's own time zone (File → Settings → Time zone: India).
 
 ## 3. Publish it
 

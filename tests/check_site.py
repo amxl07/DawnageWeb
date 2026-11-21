@@ -265,5 +265,30 @@ class Fragments(unittest.TestCase):
         self.assertEqual(broken, [])
 
 
+class ReviewFixes(unittest.TestCase):
+    def css(self):
+        return (SITE / "assets" / "site.css").read_text()
+
+    def test_focus_visible_on_dark_surfaces(self):
+        self.assertRegex(self.css(), r"\.hero-video :focus-visible,\s*\.vsl-frame :focus-visible,\s*\.film-dialog :focus-visible \{ outline-color: #fff;")
+
+    def test_film_dialog_fits_short_screens(self):
+        rule = re.search(r"\.film-dialog \{[^}]*\}", self.css()).group(0)
+        self.assertIn("16 / 9", rule)
+        self.assertIn("max-height: none", rule)
+
+    def test_counter_total_is_not_hard_coded(self):
+        self.assertIn("<span data-total>", read("coaching.html"))
+        self.assertNotIn("/ 6 client stories", read("coaching.html"))
+
+    def test_funnel_header_fits_360(self):
+        self.assertRegex(self.css(), r"@media \(max-width: 380px\) \{ \.funnel-header \.brand img \{ width: 150px; height: auto; \} \}")
+
+    def test_no_python_cache_committed(self):
+        import subprocess
+        tracked = subprocess.run(["git", "ls-files"], cwd=SITE.parent, capture_output=True, text=True).stdout
+        self.assertNotIn("__pycache__", tracked)
+
+
 if __name__ == "__main__":
     unittest.main()
