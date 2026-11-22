@@ -323,5 +323,34 @@ class CommunityTheme(unittest.TestCase):
         self.assertIn("The Senses", text("index.html"))
 
 
+class MobileAndScreens(unittest.TestCase):
+    def css(self):
+        return (SITE / "assets" / "site.css").read_text()
+
+    def test_community_backgrounds_need_no_browser_blur(self):
+        for cls in ("c-hero-bg", "c-more-bg", "c-senses-bg"):
+            rule = re.search(r"\.%s \{[^}]*\}" % cls, self.css()).group(0)
+            self.assertNotIn("filter", rule, cls)
+        html = read("community.html")
+        for f in ("concept-hero-run-bg.webp", "concept-shadows-bg.webp", "concept-senses-bg.webp"):
+            self.assertIn(f"url(photos/{f})", html)
+            self.assertTrue((SITE / "photos" / f).exists(), f)
+
+    def test_hero_video_hidden_until_playing(self):
+        self.assertIn(".js .hero-loop { opacity: 0;", self.css())
+        self.assertIn(".js .hero-loop.is-playing { opacity: 1; }", self.css())
+
+    def test_app_and_dashboard_screens_in_place(self):
+        home, coaching = read("index.html"), read("coaching.html")
+        self.assertRegex(home, r'<div class="phone">\s*<div class="photo-ph"><img src="photos/app-home.webp"')
+        self.assertIn('src="photos/app-dashboard.webp"', home)
+        self.assertIn('src="photos/app-progress.webp"', coaching)
+        self.assertIn('src="photos/app-home.webp"', coaching)
+        for p in ("index.html", "coaching.html"):
+            self.assertNotIn("Screenshot ·", read(p), p)
+        for f in ("app-home.webp", "app-progress.webp", "app-dashboard.webp"):
+            self.assertTrue((SITE / "photos" / f).exists(), f)
+
+
 if __name__ == "__main__":
     unittest.main()

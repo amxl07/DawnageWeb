@@ -149,6 +149,12 @@
   if (loop) {
     var toggle = document.querySelector(".loop-toggle");
     var conn = navigator.connection;
+    // Paint the poster behind the video: phones that block, fail or never start the video
+    // still show the picture (the video itself stays invisible until it really plays)
+    var heroBox = loop.closest(".hero-video");
+    var poster = loop.getAttribute("poster");
+    if (heroBox && poster) heroBox.style.backgroundImage = 'url("' + poster + '")';
+    loop.addEventListener("playing", function () { loop.classList.add("is-playing"); });
     var canPlay = shouldPlayLoop({
       reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
       saveData: !!(conn && conn.saveData)

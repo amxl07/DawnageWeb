@@ -12,6 +12,10 @@ goal-fatloss.webp, goal-muscle.webp, goal-calisthenics.webp   No longer used (go
 concept-hero-run.webp   Blurred runners, Community hero background   (CUT FROM THE DESIGN CONCEPT: replace before launch)
 concept-shadows.webp    Runner shadows, Community "More than a morning run" background (concept: replace)
 concept-senses.webp     Candle-lit studio, Community "The Senses" image + background   (concept: replace)
+app-home.webp           App home screen (Home phone, Coaching)    cropped from the app design shot, upscaled 2x
+app-progress.webp       App weekly progress screen (Coaching)     cropped from the app design shot, upscaled 2x
+app-dashboard.webp      Dashboard (Home), transparent corners     cropped from the dashboard design shot, upscaled 1.6x
+concept-*-bg.webp       Pre-blurred copies of the concept images for the Community backgrounds
 ebook-1.webp            Dumbbell in light, ebook cover    (stock, Northform)
 ebook-2.webp            Athlete in locker room, ebook cover (stock, Northform)
 Stock photos: confirm the licence allows commercial use before launch, or replace with Dawnage's own shoots.
@@ -25,6 +29,5 @@ runclub-hero.webp (motion, landscape)       Community hero background (it gets b
 senses-1.webp                               The Senses space (Community)
 hq-1.webp                                   The studio in Kakkanad (Home tile, Dawnage HQ)
 client-1-before.webp, client-1-after.webp … Client stories (Coaching), with written consent
-app-1.webp … app-3.webp                     Dawnage app screenshots (Home, Coaching)
 
 Before/after transformation photos only with the member's written consent.

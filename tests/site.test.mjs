@@ -192,6 +192,41 @@ test("carousel counter and labels follow the real number of stories", () => {
   assert.equal(parts["[data-next]"].disabled, false);
 });
 
+function heroHarness(reducedMotion) {
+  const handlers = {};
+  const classes = new Set();
+  const hero = { style: {} };
+  const loop = {
+    attrs: { poster: "photos/team.webp", "data-src-wide": "media/hero-loop.mp4", "data-src-tall": "media/hero-loop-vertical.mp4" },
+    getAttribute(k) { return this.attrs[k]; },
+    addEventListener(t, fn) { (handlers[t] = handlers[t] || []).push(fn); },
+    closest: (s) => (s === ".hero-video" ? hero : null),
+    classList: { add: (c) => classes.add(c), contains: (c) => classes.has(c) },
+    play: () => Promise.resolve(), pause() {}, paused: false, src: "",
+  };
+  const toggle = { hidden: true, setAttribute() {}, addEventListener() {} };
+  const doc = { ...document, querySelector: (s) => ({ ".hero-loop": loop, ".loop-toggle": toggle })[s] || null };
+  const win = { ...window, matchMedia: (q) => ({ matches: reducedMotion && q.includes("reduced-motion") }) };
+  vm.runInNewContext(code, { window: win, document: doc, URL, URLSearchParams, navigator: {} });
+  return { hero, loop, toggle, classes, fire: (t) => (handlers[t] || []).forEach((fn) => fn()) };
+}
+
+test("hero shows its poster behind the video until the video really plays", () => {
+  const h = heroHarness(false);
+  assert.equal(h.hero.style.backgroundImage, 'url("photos/team.webp")');
+  assert.equal(h.loop.src, "media/hero-loop.mp4");
+  assert.equal(h.classes.has("is-playing"), false);
+  h.fire("playing");
+  assert.equal(h.classes.has("is-playing"), true);
+  assert.equal(h.toggle.hidden, false);
+});
+
+test("hero with reduced motion keeps the poster and loads no video", () => {
+  const h = heroHarness(true);
+  assert.equal(h.hero.style.backgroundImage, 'url("photos/team.webp")');
+  assert.equal(h.loop.src, "");
+});
+
 test("Sheet script stores every answer as text and stamps the time itself", () => {
   const doc = readFileSync(new URL("../docs/google-sheet-setup.md", import.meta.url), "utf8");
   const script = doc.match(/```js\n([\s\S]*?)```/)[1];

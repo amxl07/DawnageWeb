@@ -56,7 +56,6 @@ Anything the client still needs to supply is shown with a **dashed underline and
 | Hero video loop (landscape + vertical) and a large poster frame | Home |
 | Full film link (YouTube/Vimeo) | Home ("Watch the film") |
 | Coaching video link (Malayalam) | Coaching |
-| Dawnage app screenshots (3) | Home, Coaching |
 | Up to 6 client stories: before/after photos, result, starting point, coach's change (with consent) | Coaching |
 | Number of clients coached + 3 client photos | Home |
 | Founder story (two lines), coach names and specialities, coach portraits | About |

@@ -57,7 +57,7 @@ The person asking for changes is a designer, not a developer. Make the change, t
 - Never use stock photos for coaches, members, Run Club, The Senses, testimonials or before/after. Those slots stay as placeholders until real photos arrive.
 - **Video:**
   - Homepage hero loop: `site/media/hero-loop.mp4` (landscape) and `site/media/hero-loop-vertical.mp4` (phones). Each should be 10–15s, H.264, no audio track, at most about 4 MB.
-  - The poster (still frame) is the `poster` attribute on `<video class="hero-loop">` in `index.html`.
+  - The poster (still frame) is the `poster` attribute on `<video class="hero-loop">` in `index.html`. The script also paints it behind the video, and the video stays invisible until it actually plays. That way phones that block or fail the video still show the picture.
   - The full film and the coaching video are YouTube/Vimeo links (unlisted is fine) in a `data-film="…"` attribute:
     - the "Watch the film" button in `index.html`
     - the play button in `coaching.html`
@@ -66,7 +66,8 @@ The person asking for changes is a designer, not a developer. Make the change, t
   - The Sheet's web-app URL goes in `data-sheet="…"` on `<form id="apply-form">`. Setup steps: `docs/google-sheet-setup.md`.
   - Links can pre-select a goal: `coaching.html?goal=fat-loss#apply` (`fat-loss`, `muscle-building`, `hyrox`, `calisthenics`, `other`).
 - Placeholder links whose real address isn't known yet use a fragment ending in `-needed` (for example `#instagram-url-needed` on the Community page). Replace every one when the real link arrives.
-- Community blurred backgrounds are set as `style="background-image:url(photos/…)"` on the `c-hero-bg`, `c-more-bg` and `c-senses-bg` layers. Swap the file name to change them. The current `photos/concept-*.webp` files are cut from the design concept and must be replaced with Dawnage's own photos before launch.
+- Community blurred backgrounds are set as `style="background-image:url(photos/…)"` on the `c-hero-bg`, `c-more-bg` and `c-senses-bg` layers. Swap the file name to change them. These files are **pre-blurred** (`*-bg.webp`): the blur is baked into the image rather than done by the browser, because iPhone Safari often fails to draw large CSS blurs. Never add `filter: blur()` to those layers. To use a new photo, make a blurred copy of it the same way (Python/Pillow GaussianBlur). The current `photos/concept-*.webp` files are cut from the design concept and must be replaced with Dawnage's own photos before launch.
+- App screens: `photos/app-home.webp` and `photos/app-progress.webp` sit in the phone frames (Home, Coaching), and `photos/app-dashboard.webp` is the dashboard (Home). They were cropped from the app design shots and upscaled.
 - Client stories (`coaching.html#results`): add or remove whole `<article class="story">` blocks (up to 6). The counter and labels update themselves.
 - The coaching app is for enrolled clients only and isn't in the app stores yet: no download buttons or store badges until it is.
 - Dawnage AI (the old WhatsApp assistant) no longer exists. Don't mention it.
